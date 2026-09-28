@@ -31,6 +31,7 @@ services:
       # ./agent fills these per machine (GPU: qwen3.5:9b, x1 | CPU: qwen3:4b, x4) unless .env sets them
       AGENT_MODEL_MAIN: ${AGENT_MODEL_MAIN:-}
       AGENT_TIMEOUT_SCALE: ${AGENT_TIMEOUT_SCALE:-1}
+      TZ: ${TZ:-UTC}                      # ./agent passes the host's time zone
     volumes:
       - ./config:/app/config              # edit settings, policies, mail templates without rebuilding
       - ./data:/app/data                  # database, drafts, reports, traces, extracted PDFs

@@ -24,6 +24,12 @@ else
 fi
 export AGENT_MODEL_MAIN AGENT_TIMEOUT_SCALE
 
+# Use this machine's time zone inside the container (mail dates, "informed on ..." dates)
+: "${TZ:=$(envval TZ)}"
+[ -n "$TZ" ] || TZ="$(timedatectl show -p Timezone --value 2>/dev/null || true)"
+[ -n "$TZ" ] || { [ -L /etc/localtime ] && TZ="$(readlink /etc/localtime | sed 's|.*/zoneinfo/||')"; }
+export TZ="${TZ:-UTC}"
+
 docker compose $FILES up -d --wait ollama >/dev/null
 TTY=""
 [ -t 0 ] || TTY="-T"          # piped input (e.g. `yes y | ./agent ...`) needs no TTY
