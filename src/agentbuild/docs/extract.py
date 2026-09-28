@@ -1,6 +1,7 @@
 """PDF -> per-page text. Text layer via PyMuPDF; pages without one fall back to local Tesseract OCR."""
 from __future__ import annotations
 
+import os
 import shutil
 import tempfile
 from dataclasses import dataclass
@@ -22,14 +23,26 @@ class Page:
     ocr: bool = False
 
 
+def tesseract_bin() -> str | None:
+    """Tesseract location: $AGENT_TESSERACT, then PATH, then the usual Windows install folders."""
+    if (env := os.environ.get("AGENT_TESSERACT")) and Path(env).is_file():
+        return env
+    if found := shutil.which("tesseract"):
+        return found
+    for base in (os.environ.get("PROGRAMFILES"), os.environ.get("LOCALAPPDATA", "") + "\\Programs"):
+        if base and (p := Path(base) / "Tesseract-OCR" / "tesseract.exe").is_file():
+            return str(p)
+    return None
+
+
 def ocr_available() -> bool:
-    return shutil.which("tesseract") is not None
+    return tesseract_bin() is not None
 
 
 def ocr_languages() -> set[str]:
     if not ocr_available():
         return set()
-    r = sandbox.run(["tesseract", "--list-langs"], cwd=Path(tempfile.gettempdir()), timeout_s=15)
+    r = sandbox.run([tesseract_bin(), "--list-langs"], cwd=Path(tempfile.gettempdir()), timeout_s=15)
     lines = (r.stdout + r.stderr).splitlines()
     return {l.strip() for l in lines if l.strip() and " " not in l.strip() and not l.endswith(":")}
 
@@ -37,7 +50,8 @@ def ocr_languages() -> set[str]:
 def ocr_problem(lang: str) -> str | None:
     """None if OCR can run for `lang` (e.g. 'eng+tam'), else a fix-it message."""
     if not ocr_available():
-        return "tesseract is not installed (Arch: sudo pacman -S tesseract tesseract-data-eng)"
+        return ("tesseract is not installed (optional, only for scanned PDFs). Linux: install tesseract + "
+                "tesseract-data-eng; Windows: UB Mannheim Tesseract installer, or set AGENT_TESSERACT to tesseract.exe")
     missing = [l for l in lang.split("+") if l not in ocr_languages()]
     if missing:
         pkgs = " ".join(f"tesseract-data-{m}" for m in missing)
@@ -49,7 +63,7 @@ def _ocr_page(page: pymupdf.Page, lang: str, dpi: int, timeout_s: int) -> str:
     with tempfile.TemporaryDirectory(prefix="agentocr-") as tmp:
         png = Path(tmp) / "page.png"
         page.get_pixmap(dpi=dpi).save(png)
-        r = sandbox.run(["tesseract", str(png), "stdout", "-l", lang], cwd=Path(tmp), timeout_s=timeout_s)
+        r = sandbox.run([tesseract_bin(), str(png), "stdout", "-l", lang], cwd=Path(tmp), timeout_s=timeout_s)
         return r.stdout if r.exit_code == 0 else ""
 
 

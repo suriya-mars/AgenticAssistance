@@ -71,6 +71,24 @@ reports in `files/` and repositories in `repos/`. Your data stays in `data/`, wh
   with longer time limits (see [Models and hardware](#models-and-hardware)).
 - **Behind a proxy:** set the proxy in Docker Desktop (Settings → Resources → Proxies); the build passes it through.
 
+## Quick start (Windows, without Docker)
+
+For a laptop where Docker can't be installed. Python and Ollama install **per-user, without admin rights**.
+Check your company's software policy first.
+
+1. **Python 3.11+** from [python.org](https://www.python.org/downloads/): choose *Install for me only* and tick
+   *Add python.exe to PATH*.
+2. **Ollama** from [ollama.com/download](https://ollama.com/download), then start it from the Start menu.
+3. In **cmd** or PowerShell:
+   ```bat
+   git clone https://github.com/suriya-mars/AgenticAssistance.git
+   cd AgenticAssistance
+   setup-windows.cmd        :: creates venv, installs libraries, downloads models (~9 GB), runs doctor
+   agent doctor
+   ```
+Then use `agent <command>` for everything below. Optional: for **scanned** PDFs, install Tesseract (UB Mannheim
+build). It is found automatically in Program Files, or set `AGENT_TESSERACT` in `.env` to the full path of `tesseract.exe`.
+
 ## Quick start (native, for development)
 
 ```bash

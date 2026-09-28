@@ -1,9 +1,11 @@
 """Generic QC adapter: wraps any CLI tool declared in qc_tools.yaml as a QCTool."""
 from __future__ import annotations
 
+import importlib.util
 import json
 import re
 import shutil
+import sys
 import time
 from pathlib import Path
 
@@ -18,7 +20,7 @@ _SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,199}$")
 class CommandToolConfig(BaseModel):
     name: str = Field(pattern=r"^[a-z][a-z0-9_]{0,40}$")
     description: str = ""
-    argv: list[str]                         # placeholders: {repo}, {ref}
+    argv: list[str]                         # placeholders: {repo}, {ref}, {python}
     timeout_s: int = 300
     severity: Severity = Severity.MAJOR
     required: bool = True
@@ -45,11 +47,16 @@ class CommandQCTool:
         self.required = cfg.required
 
     def available(self) -> bool:
-        return shutil.which(self.cfg.argv[0]) is not None
+        argv = self.cfg.argv
+        if argv[0] == "{python}":
+            # `{python} -m tool`: available only if that module is installed for this interpreter
+            return len(argv) < 3 or argv[1] != "-m" or importlib.util.find_spec(argv[2]) is not None
+        return shutil.which(argv[0]) is not None
 
     def build_argv(self, workspace: Path, ref: str | None) -> list[str]:
         # Placeholders are substituted per-argument; values can never introduce new argv entries.
-        subs = {"{repo}": str(workspace), "{ref}": safe_ref(ref)}
+        # {python} = the interpreter running the agent (python3 on Linux, python.exe on Windows).
+        subs = {"{repo}": str(workspace), "{ref}": safe_ref(ref), "{python}": sys.executable}
         out = []
         for a in self.cfg.argv:
             for k, v in subs.items():

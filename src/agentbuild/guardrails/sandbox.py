@@ -6,7 +6,11 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-SAFE_ENV_KEYS = {"PATH", "HOME", "LANG", "LC_ALL", "TERM", "USER", "TMPDIR", "VIRTUAL_ENV"}
+SAFE_ENV_KEYS = {"PATH", "HOME", "LANG", "LC_ALL", "TERM", "USER", "TMPDIR", "VIRTUAL_ENV",
+                 # Windows: programs (Python, git, tesseract) fail to start without these
+                 "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "TEMP", "TMP", "USERPROFILE",
+                 "APPDATA", "LOCALAPPDATA", "PROGRAMDATA", "PROGRAMFILES", "NUMBER_OF_PROCESSORS",
+                 "PROCESSOR_ARCHITECTURE", "USERNAME", "HOMEDRIVE", "HOMEPATH"}
 
 
 class SandboxError(Exception):

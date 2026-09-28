@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8"]
+dev = ["pytest>=8", "ruff"]   # both are also used by the example QC checks
 
 [project.scripts]
 agent = "agentbuild.cli:main"
