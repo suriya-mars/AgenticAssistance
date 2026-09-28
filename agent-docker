@@ -2,7 +2,7 @@
 # Runs any AgentBuild command in Docker, e.g.  ./agent doctor   ./agent bug status BUG-12345
 set -e
 cd "$(dirname "$0")"
-envval() { [ -f .env ] && sed -n "s/^$1=//p" .env | tail -1; }
+envval() { [ -f .env ] || return 0; sed -n "s/^$1=//p" .env | tail -1; }
 export AGENT_UID="$(id -u)" AGENT_GID="$(id -g)"
 mkdir -p data files repos
 
@@ -22,7 +22,9 @@ if [ "$GPU" = "1" ]; then
 else
   : "${AGENT_MODEL_MAIN:=qwen3:4b}"; : "${AGENT_TIMEOUT_SCALE:=4}"
 fi
-export AGENT_MODEL_MAIN AGENT_TIMEOUT_SCALE
+: "${AGENT_MODEL_QUALITY:=$(envval AGENT_MODEL_QUALITY)}"
+: "${AGENT_MODEL_QUALITY:=qwen3.5:9b}"   # ASoC analysis only, on GPU and CPU
+export AGENT_MODEL_MAIN AGENT_MODEL_QUALITY AGENT_TIMEOUT_SCALE
 
 # Use this machine's time zone inside the container (mail dates, "informed on ..." dates)
 : "${TZ:=$(envval TZ)}"

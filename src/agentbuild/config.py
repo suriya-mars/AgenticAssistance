@@ -81,6 +81,8 @@ def _env_overrides(raw: dict[str, Any]) -> None:
         raw.setdefault("models", {})["fast"] = v
     if v := env.get("AGENT_MODEL_MAIN"):
         raw.setdefault("models", {})["main"] = v
+    if v := env.get("AGENT_MODEL_QUALITY"):
+        raw.setdefault("models", {})["quality"] = v
     if v := env.get("AGENT_TIMEOUT_SCALE"):
         raw.setdefault("ollama", {})["timeout_scale"] = float(v)
     if v := env.get("AGENT_REPO_ROOTS"):

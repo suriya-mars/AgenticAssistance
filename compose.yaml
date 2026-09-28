@@ -30,6 +30,7 @@ services:
       AGENT_OLLAMA_URL: http://ollama:11434
       # ./agent fills these per machine (GPU: qwen3.5:9b, x1 | CPU: qwen3:4b, x4) unless .env sets them
       AGENT_MODEL_MAIN: ${AGENT_MODEL_MAIN:-}
+      AGENT_MODEL_QUALITY: ${AGENT_MODEL_QUALITY:-}
       AGENT_TIMEOUT_SCALE: ${AGENT_TIMEOUT_SCALE:-1}
       TZ: ${TZ:-UTC}                      # ./agent passes the host's time zone
     volumes:

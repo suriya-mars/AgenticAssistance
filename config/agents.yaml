@@ -37,7 +37,7 @@ agents:
 
   # ---- BUG quality process ----
   asoc_analyst:
-    model: main
+    model: quality            # the bigger model: once per scan, writes the summary for the security team
     prompt: asoc_analyst.md
     output: AsocAnalysis
     tools: []                 # report text is untrusted

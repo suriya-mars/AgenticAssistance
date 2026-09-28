@@ -41,7 +41,9 @@ Measured with CPU only (x86-64, 16 GB RAM):
 | ASoC report analysis | ~55 s | a few minutes |
 | RAM used by the model container | ~4 GB | ~4 GB |
 
-qwen3.5:9b also works on CPU (~35–40 s per question, ~7 GB RAM): set `AGENT_MODEL_MAIN=qwen3.5:9b` in `.env`.
+The ASoC analysis always uses **qwen3.5:9b** (`quality` role), because its summary goes into the security team mail and is
+clearly more precise. On CPU, a scan takes ~2 min on 16 threads (~7 GB RAM), and the next command reloads qwen3:4b once (~30 s).
+Faster but vaguer: `AGENT_MODEL_QUALITY=qwen3:4b`. To use 9B for everything: `AGENT_MODEL_MAIN=qwen3.5:9b` (~35–40 s per question).
 Close other heavy apps on a 16 GB laptop when using it.
 
 ## GPU

@@ -14,6 +14,10 @@ from agentbuild.core.types import LLMResponse, ToolCall
 _THINK = re.compile(r"<think>.*?</think>", re.S)
 
 
+class OllamaUnavailable(RuntimeError):
+    """Ollama could not be reached at all (not running / wrong URL)."""
+
+
 class LLM(Protocol):
     def chat(
         self,
@@ -68,6 +72,10 @@ class OllamaClient:
                 last_err = e
                 time.sleep(1.5 * (attempt + 1))
         else:
+            if isinstance(last_err, httpx.ConnectError):
+                raise OllamaUnavailable(
+                    f"Cannot reach Ollama at {self.base_url}. Start it with `ollama serve` "
+                    f"(or `systemctl start ollama`), or use ./agent-docker which starts its own.") from last_err
             raise RuntimeError(f"Ollama request failed: {last_err}") from last_err
 
         msg = data.get("message", {})

@@ -9,10 +9,12 @@ ollama:
   think: false           # Qwen3 reasoning mode: false = ~40x faster JSON/tool output; true = slower, deeper
 
 # Logical roles -> Ollama tags. Swap models here without touching code.
-# Env vars override these (Docker .env): AGENT_MODEL_FAST, AGENT_MODEL_MAIN, AGENT_OLLAMA_URL, AGENT_OLLAMA_THINK
+# Env vars override these (Docker .env): AGENT_MODEL_FAST, AGENT_MODEL_MAIN, AGENT_MODEL_QUALITY,
+# AGENT_OLLAMA_URL, AGENT_OLLAMA_THINK
 models:
   fast: qwen3:4b
   main: qwen3:4b         # one model for both roles: stays loaded, no VRAM swapping
+  quality: qwen3.5:9b    # only for the ASoC analysis (its summary goes into the security team mail)
 
 mail:
   source: local            # imap | local

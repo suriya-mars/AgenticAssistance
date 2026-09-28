@@ -19,7 +19,7 @@ from agentbuild.core.supervisor import Supervisor
 from agentbuild.docs.extract import PdfError, ocr_problem
 from agentbuild.docs.qa import QAResult
 from agentbuild.guardrails.sandbox import SandboxError
-from agentbuild.llm.ollama_client import OllamaClient
+from agentbuild.llm.ollama_client import OllamaClient, OllamaUnavailable
 from agentbuild.mail.drafts import IMAPDraftSink, LocalDraftSink
 from agentbuild.mail.imap_source import IMAPSource, LocalEmlSource, MailSource
 from agentbuild.storage.db import DB
@@ -69,7 +69,8 @@ def doctor():
     s = load_settings()
     ok = lambda b: "[green]OK[/]" if b else "[red]FAIL[/]"  # noqa: E731
     console.print(f"Project root: {s.root}")
-    console.print(f"Models: fast={s.models.get('fast')} main={s.models.get('main')} | "
+    console.print(f"Models: fast={s.models.get('fast')} main={s.models.get('main')} "
+                  f"quality={s.models.get('quality', s.models.get('main'))} | "
                   f"thinking={'on' if s.ollama.get('think') else 'off'} | timeout scale x{s.timeout_scale:g}")
     client = OllamaClient(s.ollama.get("url", "http://localhost:11434"))
     try:
@@ -568,5 +569,14 @@ def ask(request: str):
         console.print("I can triage mail, draft replies, run QC, list tasks, answer questions about a PDF, or run a bug's quality process.")
 
 
+def main() -> None:
+    """Entry point: clear one-line errors for problems the user can fix, instead of a traceback."""
+    try:
+        app()
+    except OllamaUnavailable as e:
+        console.print(f"[red]{escape(str(e))}[/]")
+        raise SystemExit(3)
+
+
 if __name__ == "__main__":
-    app()
+    main()
