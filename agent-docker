@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+# Runs any AgentBuild command in Docker, e.g.  ./agent doctor   ./agent bug status BUG-12345
+set -e
+cd "$(dirname "$0")"
+envval() { [ -f .env ] && sed -n "s/^$1=//p" .env | tail -1; }
+export AGENT_UID="$(id -u)" AGENT_GID="$(id -g)"
+mkdir -p data files repos
+
+GPU="${AGENT_GPU:-$(envval AGENT_GPU)}"
+if [ -z "$GPU" ]; then
+  if docker info --format '{{json .Runtimes}}' 2>/dev/null | grep -q nvidia; then GPU=1; else GPU=0; fi
+fi
+FILES="-f compose.yaml"
+[ "$GPU" = "1" ] && FILES="$FILES -f compose.gpu.yaml"
+[ -f compose.local.yaml ] && FILES="$FILES -f compose.local.yaml"   # optional per-machine tweaks
+
+# Per-machine defaults unless set in the environment or .env
+: "${AGENT_MODEL_MAIN:=$(envval AGENT_MODEL_MAIN)}"
+: "${AGENT_TIMEOUT_SCALE:=$(envval AGENT_TIMEOUT_SCALE)}"
+if [ "$GPU" = "1" ]; then
+  : "${AGENT_MODEL_MAIN:=qwen3.5:9b}"; : "${AGENT_TIMEOUT_SCALE:=1}"
+else
+  : "${AGENT_MODEL_MAIN:=qwen3:4b}"; : "${AGENT_TIMEOUT_SCALE:=4}"
+fi
+export AGENT_MODEL_MAIN AGENT_TIMEOUT_SCALE
+
+docker compose $FILES up -d --wait ollama >/dev/null
+TTY=""
+[ -t 0 ] || TTY="-T"          # piped input (e.g. `yes y | ./agent ...`) needs no TTY
+exec docker compose $FILES run --rm $TTY agent "$@"

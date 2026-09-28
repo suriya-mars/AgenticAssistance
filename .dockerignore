@@ -1,0 +1,12 @@
+venv/
+data/
+dist/
+docker/
+.git/
+.vscode/
+**/__pycache__/
+**/*.egg-info/
+.pytest_cache/
+files/
+repos/
+.env

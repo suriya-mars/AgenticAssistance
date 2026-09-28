@@ -1,0 +1,15 @@
+# Guardrail policy.
+# Agents allowed to call EXEC-risk tools (process execution). EXEC is additionally
+# hard-blocked whenever untrusted content (email, repo files) is in the agent's context.
+exec_agents: [qc]
+
+# A QC run started from an email always needs a human "yes" (plus the allowlist below).
+approve_exec_on_mail_trigger: true
+
+# Set true to be asked before *every* EXEC tool call, even for CLI-started runs.
+approve_all_exec: false
+
+# Who may request a QC/release check by email. Exact address or "@domain".
+qc_sender_allowlist:
+  - release-manager@yourcompany.com
+  - "@yourcompany.com"

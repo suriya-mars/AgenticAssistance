@@ -1,0 +1,12 @@
+From: Kavya (QA) <tester@yourcompany.com>
+To: you@example.com
+Subject: Re: [BUG-12345] Testing request - Payments API order lookup fix
+Date: Mon, 22 Sep 2026 10:05:00 +0530
+Message-ID: <010_bug_tester_approval@yourcompany.com>
+Content-Type: text/plain; charset=utf-8
+
+Hi Suriya,
+
+I reviewed the scope for BUG-12345. The test scope is approved, I will start testing today.
+
+Kavya

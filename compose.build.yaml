@@ -1,0 +1,14 @@
+# Only for building the images (scripts/build.sh). The exported bundle does not need this file.
+services:
+  ollama:
+    build:
+      context: docker
+      dockerfile: ${OLLAMA_DOCKERFILE:-ollama.Dockerfile}   # ollama-pull.Dockerfile = download models while building
+      target: ${OLLAMA_FLAVOR:-cpu}      # cpu (any x86-64 machine) | gpu (adds NVIDIA CUDA backends)
+      args:
+        OLLAMA_VERSION: ${OLLAMA_VERSION:-0.34.4}
+        MODELS: ${MODELS:-qwen3:4b qwen3.5:9b}
+  agent:
+    build:
+      context: .
+      dockerfile: docker/app.Dockerfile

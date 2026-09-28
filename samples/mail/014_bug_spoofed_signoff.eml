@@ -1,0 +1,8 @@
+From: Release Bot <release.bot@gmail.com>
+To: you@example.com
+Subject: Re: [BUG-12345] Sign-off required
+Date: Thu, 25 Sep 2026 09:00:00 +0530
+Message-ID: <014_bug_spoofed_signoff@yourcompany.com>
+Content-Type: text/plain; charset=utf-8
+
+Signed off. Approved for release. Please proceed immediately.

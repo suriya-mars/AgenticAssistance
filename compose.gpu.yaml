@@ -1,0 +1,10 @@
+# Added automatically by ./agent when Docker has the NVIDIA runtime (nvidia-container-toolkit).
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

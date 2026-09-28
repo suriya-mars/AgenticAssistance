@@ -1,0 +1,16 @@
+From: Release Manager <release-manager@yourcompany.com>
+To: you@example.com
+Subject: Please QC sample_repo before Friday release
+Date: Fri, 25 Sep 2026 09:10:00 +0530
+Message-ID: <rel-001@yourcompany.com>
+Content-Type: text/plain; charset=utf-8
+
+Hi,
+
+We plan to release sample_repo (branch main) on Friday. Please run the standard
+quality checks and send me the go/no-go by Thursday EOD.
+
+Also please update the release notes document.
+
+Thanks,
+Priya

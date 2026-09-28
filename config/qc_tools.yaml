@@ -1,0 +1,46 @@
+# QC plug-ins. Add your organisation's tools here - no code changes needed.
+#
+# Fields:
+#   name            [a-z0-9_], becomes LLM tool "qc_<name>"
+#   argv            command as a list (NO shell). Placeholders: {repo}, {ref}
+#   severity        blocker (fail/skip => NO_GO) | major (fail => NEEDS_REVIEW) | minor | info
+#   required        true = always run by the pipeline; false = optional, the QC agent may run it
+#   timeout_s       hard kill after this many seconds
+#   pass_exit_codes exit codes counted as pass (default [0])
+#   parser          exit_code | json | regex  (how findings are extracted from stdout)
+#   findings_regex  for parser=regex; named groups become finding fields
+#   env             extra env vars (the rest of the environment is scrubbed)
+#
+# The entries below are working examples - replace them with your real tools.
+tools:
+  - name: syntax
+    description: Python byte-compile of every file (catches syntax errors)
+    argv: ["python3", "-m", "compileall", "-q", "{repo}"]
+    severity: blocker
+    required: true
+    timeout_s: 120
+
+  - name: tests
+    description: Unit tests via pytest
+    argv: ["python3", "-m", "pytest", "-q", "--no-header", "-p", "no:cacheprovider", "{repo}"]
+    severity: blocker
+    required: true
+    timeout_s: 600
+    parser: regex
+    findings_regex: "^FAILED (?P<test>\\S+)(?: - (?P<message>.*))?$"
+
+  - name: lint
+    description: Ruff lint (JSON findings)
+    argv: ["ruff", "check", "{repo}", "--output-format", "json"]
+    severity: major
+    required: true
+    timeout_s: 300
+    parser: json
+
+  - name: secrets
+    description: Secret scan with gitleaks
+    argv: ["gitleaks", "detect", "--source", "{repo}", "--no-banner", "--report-format", "json", "--report-path", "/dev/stdout"]
+    severity: blocker
+    required: false
+    timeout_s: 300
+    parser: json

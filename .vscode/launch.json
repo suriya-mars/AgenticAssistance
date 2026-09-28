@@ -1,0 +1,61 @@
+{
+  // Debug configurations: open "Run and Debug" (Ctrl+Shift+D), pick one, press F5.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Agent: pdf ask",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "agentbuild.cli",
+      "args": ["pdf", "ask", "release_policy", "How many approvals does a hotfix need?"],
+      "python": "${workspaceFolder}/venv/bin/python",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Agent: pdf chat",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "agentbuild.cli",
+      "args": ["pdf", "chat", "release_policy"],
+      "python": "${workspaceFolder}/venv/bin/python",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Agent: mail triage (reprocess)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "agentbuild.cli",
+      "args": ["mail", "triage", "--reprocess"],
+      "python": "${workspaceFolder}/venv/bin/python",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Agent: qc run sample_repo",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "agentbuild.cli",
+      "args": ["qc", "run", "samples/sample_repo"],
+      "python": "${workspaceFolder}/venv/bin/python",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Tests: agent loop (no Ollama needed)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["-q", "tests/test_agent.py"],
+      "python": "${workspaceFolder}/venv/bin/python",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

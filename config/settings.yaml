@@ -1,0 +1,76 @@
+# Everything runs locally. The only outbound network connection is IMAP (read-only).
+ollama:
+  url: http://localhost:11434
+  num_ctx: 8192          # keep modest: RTX 3050 6GB
+  temperature: 0.2
+  keep_alive: 5m
+  timeout_s: 300           # per model request; multiplied by timeout_scale (env AGENT_TIMEOUT_SCALE)
+  timeout_scale: 1         # CPU-only machines: ./agent sets 4 automatically
+  think: false           # Qwen3 reasoning mode: false = ~40x faster JSON/tool output; true = slower, deeper
+
+# Logical roles -> Ollama tags. Swap models here without touching code.
+# Env vars override these (Docker .env): AGENT_MODEL_FAST, AGENT_MODEL_MAIN, AGENT_OLLAMA_URL, AGENT_OLLAMA_THINK
+models:
+  fast: qwen3:4b
+  main: qwen3:4b         # one model for both roles: stays loaded, no VRAM swapping
+
+mail:
+  source: local            # imap | local
+  local_dir: samples/mail  # used when source=local (.eml files)
+  imap:
+    host: imap.gmail.com
+    port: 993
+    user: you@example.com
+    folder: INBOX
+    password_env: AGENT_IMAP_PASSWORD   # or keyring service 'agentbuild-imap'
+  from_addr: you@example.com
+  max_body_chars: 6000
+  # Where drafts go: "imap" = your real Drafts folder (review + Send in Outlook/Gmail), "local" = data/drafts/*.eml
+  draft_target: local        # set to imap together with source: imap
+  drafts_folder: Drafts      # Gmail: "[Gmail]/Drafts"; Outlook/Office365: "Drafts"
+
+docs:
+  ocr: true                # Tesseract fallback for scanned pages (pages without a text layer)
+  ocr_lang: eng            # tesseract language pack(s), e.g. "eng+tam"
+  max_pages: 500
+  max_file_mb: 50
+  chunk_chars: 900         # page-bounded chunks, so every passage has one page number
+  top_k: 6                 # passages retrieved per question (BM25) for long documents
+  context_chars: 12000     # documents smaller than this are sent whole; fits num_ctx 8192
+
+bug:
+  id_pattern: '[A-Z][A-Z0-9_]*-\d+'   # e.g. BUG-12345, DEFECT-77
+  id_prefix: BUG-                   # a bare number "12345" becomes BUG-12345
+  my_name: Suriya
+  templates_dir: config/bug_templates
+  attach_scan_to: [security]        # attach the ASoC PDF to these mails
+  mail_lookback_days: 60            # how far back `agent bug sync` searches for replies
+  # ASoC gate: a severity count above its limit FAILS the scan and blocks the bug until it is fixed and restarted.
+  # null = that severity is not checked. For "any finding fails", set all limits to 0.
+  security_gate: {critical: 0, high: 0, medium: null, low: null, informational: null}
+  resubmit_in_same_thread: true     # after a restart, send the security mail as a reply on top of the earlier thread
+  context_chars: 12000              # budget for `agent bug ask`
+  # Default people per role; override per bug with `agent bug new/set --tester ... --pm ...`.
+  # Replies only count as approval/sign-off if the sender is listed for that role.
+  recipients:
+    security:  {name: Security Team,   to: [security-team@yourcompany.com]}
+    tester:    {name: Tester,          to: [tester@yourcompany.com]}
+    pm:        {name: Project Manager, to: [pm@yourcompany.com]}
+    keyleader: {name: Key Leader,      to: [keyleader@yourcompany.com]}
+  cc: []
+
+qc:
+  tools_file: config/qc_tools.yaml
+  # QC may only run on repositories under these directories.
+  # Relative paths resolve against the project root. A repo named in an email is looked up in each.
+  allowed_repo_roots:
+    - ~/suriya
+    - samples
+    - repos                # in Docker: the ./repos folder next to the `agent` script
+
+paths:
+  db: data/agent.db
+  runs_dir: data/runs
+  drafts_dir: data/drafts
+  reports_dir: data/reports
+  docs_dir: data/docs

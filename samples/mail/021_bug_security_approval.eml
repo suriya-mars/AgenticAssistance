@@ -1,0 +1,14 @@
+From: AppSec Team <security-team@yourcompany.com>
+To: you@example.com
+Subject: Re: [BUG-12345] ASoC security scan review - Payments API order lookup fix
+Date: Mon, 28 Sep 2026 08:52:30 +0530
+Message-ID: <021_bug_security_approval@yourcompany.com>
+In-Reply-To: <020_bug_security_rejection@yourcompany.com>
+Content-Type: text/plain; charset=utf-8
+
+Hi Suriya,
+
+Confirmed TLS 1.0/1.1 are disabled. The remaining medium/low findings are acceptable.
+Approved from the security side, you can proceed with testing.
+
+AppSec Team

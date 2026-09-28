@@ -1,0 +1,49 @@
+# AgentBuild: two containers.
+#   ollama - the LLM server with the models baked in. It sits on an internal network only: no internet, no host port.
+#   agent  - the CLI. Run it through ./agent (it starts ollama, waits until it is healthy, then runs your command).
+name: agentbuild
+
+services:
+  ollama:
+    image: agentbuild-ollama:${AGENT_VERSION:-1.0}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+    volumes:
+      - ollama-cache:/root/.ollama/cache
+    networks: [llm]
+
+  agent:
+    image: agentbuild-app:${AGENT_VERSION:-1.0}
+    profiles: ["cli"]                     # started per command by ./agent, not by `docker compose up`
+    depends_on:
+      ollama:
+        condition: service_healthy
+    user: "${AGENT_UID:-1000}:${AGENT_GID:-1000}"   # files in ./data are owned by you, not root
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      AGENT_OLLAMA_URL: http://ollama:11434
+      # ./agent fills these per machine (GPU: qwen3.5:9b, x1 | CPU: qwen3:4b, x4) unless .env sets them
+      AGENT_MODEL_MAIN: ${AGENT_MODEL_MAIN:-}
+      AGENT_TIMEOUT_SCALE: ${AGENT_TIMEOUT_SCALE:-1}
+    volumes:
+      - ./config:/app/config              # edit settings, policies, mail templates without rebuilding
+      - ./data:/app/data                  # database, drafts, reports, traces, extracted PDFs
+      - ./files:/app/files                # put PDFs / ASoC reports here:  ./agent pdf add files/x.pdf
+      - ./repos:/app/repos                # repositories for QC:            ./agent qc run repos/my-service
+    stdin_open: true
+    tty: true
+    networks: [llm, outside]              # `outside` is only needed for IMAP
+
+networks:
+  llm:
+    internal: true
+  outside: {}
+
+volumes:
+  ollama-cache: {}

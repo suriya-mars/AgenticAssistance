@@ -1,0 +1,13 @@
+From: Kavya (QA) <tester@yourcompany.com>
+To: you@example.com
+Subject: Re: [BUG-12345] Testing request - Payments API order lookup fix
+Date: Wed, 24 Sep 2026 17:40:00 +0530
+Message-ID: <011_bug_tester_signoff@yourcompany.com>
+Content-Type: text/plain; charset=utf-8
+
+Hi Suriya,
+
+Testing is complete for BUG-12345. All 42 regression cases passed.
+I give my QA sign-off, provided the medium TLS finding is tracked in a follow-up ticket.
+
+Kavya

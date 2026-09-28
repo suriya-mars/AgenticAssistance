@@ -1,0 +1,58 @@
+# Each agent = model role + prompt + tool allowlist + output schema + budget.
+agents:
+  supervisor:
+    model: fast
+    prompt: supervisor.md
+    output: RouteDecision
+    tools: []
+    budget: {max_steps: 2, timeout_s: 60}
+
+  mail_triage:
+    model: fast
+    prompt: mail_triage.md
+    output: TriageResult
+    tools: []                 # email context is untrusted: no tools at all
+    budget: {max_steps: 2, timeout_s: 120}
+
+  reply_drafter:
+    model: main
+    prompt: drafter.md
+    output: DraftReply
+    tools: []                 # drafting is pure text; saving is done by code, never sent
+    budget: {max_steps: 2, timeout_s: 180}
+
+  qc:
+    model: main
+    prompt: qc.md
+    output: QCAnalysis
+    tools: ["qc_*", "fs_read"]
+    budget: {max_steps: 8, max_tool_calls: 10, timeout_s: 900}
+
+  pdf_qa:
+    model: main
+    prompt: pdf_qa.md
+    output: PdfAnswer
+    tools: []                 # document text is untrusted: no tools
+    budget: {max_steps: 2, timeout_s: 180}
+
+  # ---- BUG quality process ----
+  asoc_analyst:
+    model: main
+    prompt: asoc_analyst.md
+    output: AsocAnalysis
+    tools: []                 # report text is untrusted
+    budget: {max_steps: 2, timeout_s: 240}
+
+  bug_mail_classifier:
+    model: fast
+    prompt: bug_mail_classifier.md
+    output: MailSignal
+    tools: []                 # classifies only; who sent it is decided by code, and you confirm every step
+    budget: {max_steps: 2, timeout_s: 120}
+
+  bug_qa:
+    model: main
+    prompt: bug_qa.md
+    output: BugAnswer
+    tools: []
+    budget: {max_steps: 2, timeout_s: 180}
