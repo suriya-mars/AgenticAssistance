@@ -46,7 +46,7 @@ flowchart LR
 Needs **Docker with Compose 2.24+**, git, about 25 GB of free disk, and an x86-64 machine. No Python or Ollama install needed.
 
 ```bash
-git clone https://github.com/<you>/AgentBuild.git && cd AgentBuild
+git clone https://github.com/suriya-mars/AgenticAssistance.git && cd AgenticAssistance
 scripts/build.sh 1.0          # builds the app + an Ollama image with both models inside (~9 GB download, once)
 cp .env.example .env          # optional: model choice, IMAP password, GPU on/off
 ./agent-docker doctor         # checks models, OCR, mail access and QC tools

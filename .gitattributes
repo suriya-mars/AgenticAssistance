@@ -1,0 +1,6 @@
+# Shell scripts and Docker files must keep Unix line endings, even when cloned with Git for Windows.
+*.sh                text eol=lf
+agent-docker        text eol=lf
+docker/bundle/agent text eol=lf
+*.Dockerfile        text eol=lf
+*.yaml              text eol=lf
