@@ -45,6 +45,7 @@ flowchart LR
 
 Needs **Docker with Compose 2.24+**, git, about 25 GB of free disk, and an x86-64 machine. No Python or Ollama install needed.
 
+**Linux / macOS / WSL2:**
 ```bash
 git clone https://github.com/suriya-mars/AgenticAssistance.git && cd AgenticAssistance
 scripts/build.sh 1.0          # builds the app + an Ollama image with both models inside (~9 GB download, once)
@@ -52,13 +53,23 @@ cp .env.example .env          # optional: model choice, IMAP password, GPU on/of
 ./agent-docker doctor         # checks models, OCR, mail access and QC tools
 ```
 
-Then use `./agent-docker <command>` for everything below. Put PDFs and ASoC reports in `files/` and repositories
-in `repos/`. Your data stays in `data/`, which is not in git.
+**Windows (cmd or PowerShell, no WSL needed; Docker Desktop must be running):**
+```bat
+git clone https://github.com/suriya-mars/AgenticAssistance.git
+cd AgenticAssistance
+scripts\build.cmd 1.0
+copy .env.example .env
+agent-docker doctor
+```
+On Windows, write paths inside commands with **forward slashes**, e.g. `agent-docker pdf add files/report.pdf`, because
+the path is used inside the Linux container.
+
+Then use `agent-docker <command>` for everything below (`./agent-docker` on Linux and macOS). Put PDFs and ASoC
+reports in `files/` and repositories in `repos/`. Your data stays in `data/`, which is not in git.
 
 - **GPU or CPU is picked automatically.** With the NVIDIA container runtime the GPU is used. Without it, the CPU is used
   with longer time limits (see [Models and hardware](#models-and-hardware)).
-- **Windows:** use Docker Desktop and run the commands in a WSL2 terminal.
-- **Behind a proxy:** set `HTTPS_PROXY` in Docker's settings; the build passes it through.
+- **Behind a proxy:** set the proxy in Docker Desktop (Settings → Resources → Proxies); the build passes it through.
 
 ## Quick start (native, for development)
 

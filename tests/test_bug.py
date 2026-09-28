@@ -116,6 +116,14 @@ def test_templates_only_fill_known_placeholders():
     assert text == "Hi Kavya, json {\"a\": 1} {scan_date}" and missing == ["scan_date"]
 
 
+def test_template_with_windows_line_endings(tmp_path):
+    from agentbuild.bug.templates import render
+    t = tmp_path / "t.md"
+    t.write_bytes(b"Subject: [{bug_id}] hello\r\n\r\nHi {recipient_name},\r\nbody\r\n")
+    r = render(t, {"bug_id": "BUG-1", "recipient_name": "Kavya"})
+    assert r.subject == "[BUG-1] hello" and r.body == "Hi Kavya,\nbody\n" and not r.missing
+
+
 def test_steps_cannot_run_out_of_order(svc):
     s = svc()
     s.create(BUG, "Payments API order lookup fix")

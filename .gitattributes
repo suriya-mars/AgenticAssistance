@@ -1,6 +1,9 @@
-# Shell scripts and Docker files must keep Unix line endings, even when cloned with Git for Windows.
-*.sh                text eol=lf
-agent-docker        text eol=lf
-docker/bundle/agent text eol=lf
-*.Dockerfile        text eol=lf
-*.yaml              text eol=lf
+# Keep Unix line endings everywhere, even when cloned with Git for Windows (core.autocrlf):
+# shell scripts, Dockerfiles and the mail templates break with CRLF.
+* text=auto eol=lf
+# Windows batch files need CRLF
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.pdf binary
+*.png binary
+*.db  binary

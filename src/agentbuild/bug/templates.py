@@ -43,7 +43,7 @@ def render_text(text: str, values: dict[str, object]) -> tuple[str, list[str]]:
 
 
 def render(path: Path, values: dict[str, object]) -> Rendered:
-    raw = path.read_text(encoding="utf-8")
+    raw = path.read_text(encoding="utf-8").replace("\r\n", "\n")   # templates edited on Windows
     head, _, body = raw.partition("\n\n")
     if not head.lower().startswith("subject:"):
         raise ValueError(f"{path.name}: first line must be 'Subject: ...' followed by a blank line")
