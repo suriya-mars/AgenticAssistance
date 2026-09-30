@@ -8,10 +8,11 @@ if not exist venv\Scripts\agent.exe (
   exit /b 1
 )
 
-rem Load settings from .env (IMAP password, model choices). TZ is skipped: Windows already knows your time zone.
+rem Load settings from .env (IMAP password, model choices); later lines win.
+rem TZ is skipped: Windows already knows your time zone.
 if exist .env (
   for /f "usebackq eol=# tokens=1,* delims==" %%a in (".env") do (
-    if /i not "%%a"=="TZ" if not "%%b"=="" if not defined %%a set "%%a=%%b"
+    if /i not "%%a"=="TZ" if not "%%b"=="" set "%%a=%%b"
   )
 )
 

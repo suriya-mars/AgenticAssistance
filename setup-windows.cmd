@@ -41,17 +41,38 @@ if errorlevel 1 (
   echo [x] Ollama is installed but not running. Start "Ollama" from the Start menu, then run this again.
   exit /b 1
 )
-echo Downloading the models (about 9 GB, one time)...
-ollama pull qwen3:4b
-if errorlevel 1 exit /b 1
-ollama pull qwen3.5:9b
-if errorlevel 1 exit /b 1
+rem Models: already-installed ones are not downloaded again.
+rem Only the 9B model?   set "MODELS=qwen3.5:9b"   then run this script (everything then uses 9B).
+if not defined MODELS set "MODELS=qwen3:4b qwen3.5:9b"
+for %%m in (%MODELS%) do (
+  ollama show %%m >nul 2>&1
+  if errorlevel 1 (
+    echo Downloading %%m ...
+    ollama pull %%m
+    if errorlevel 1 exit /b 1
+  ) else (
+    echo %%m is already installed.
+  )
+)
 
 rem Demo PDFs used in the README examples (generated, not stored in git)
 venv\Scripts\python samples\make_sample_pdf.py >nul
 venv\Scripts\python samples\make_asoc_pdf.py >nul
 
 if not exist .env copy .env.example .env >nul
+rem Without qwen3:4b, every role uses qwen3.5:9b (later lines in .env win)
+ollama show qwen3:4b >nul 2>&1
+if errorlevel 1 (
+  findstr /b /c:"AGENT_MODEL_FAST=qwen3.5:9b" .env >nul 2>&1
+  if errorlevel 1 (
+    echo.>>.env
+    echo # Added by setup-windows.cmd: qwen3:4b is not installed, so every role uses qwen3.5:9b>>.env
+    echo AGENT_MODEL_FAST=qwen3.5:9b>>.env
+    echo AGENT_MODEL_MAIN=qwen3.5:9b>>.env
+    echo AGENT_MODEL_QUALITY=qwen3.5:9b>>.env
+    echo Only qwen3.5:9b is installed: all roles set to it in .env
+  )
+)
 for %%d in (data files repos) do if not exist "%%d" mkdir "%%d"
 echo.
 call agent.cmd doctor
