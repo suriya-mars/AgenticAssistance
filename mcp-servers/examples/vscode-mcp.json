@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "agentbuild": {
+      "type": "stdio",
+      "command": "${workspaceFolder}/mcp-servers/venv/bin/agentbuild-mcp",
+      "args": ["--tools", "all"]
+    },
+    "agentbuild-http": {
+      "type": "http",
+      "url": "http://127.0.0.1:8765/mcp",
+      "headers": { "Authorization": "Bearer ${input:agentbuild-token}" }
+    }
+  },
+  "inputs": [
+    { "id": "agentbuild-token", "type": "promptString", "description": "AGENT_MCP_TOKEN of the AgentBuild server", "password": true }
+  ]
+}

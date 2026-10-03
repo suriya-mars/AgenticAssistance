@@ -1,0 +1,20 @@
+# Settings for the MCP servers only. AgentBuild's own settings stay in ../config/settings.yaml.
+
+# The AgentBuild project these servers work on (its config/, data/, files/). Relative to this folder.
+# The AGENTBUILD_HOME environment variable overrides it.
+agentbuild_home: ..
+
+# Folders whose files an MCP client may ask the server to read (PDFs, ASoC reports).
+# Relative to agentbuild_home. Anything outside is refused, so a client can't read e.g. ~/.ssh.
+# QC repositories are limited separately by qc.allowed_repo_roots in ../config/settings.yaml.
+allowed_doc_roots:
+  - files
+  - samples
+
+# Longest text a single tool result may return (mail bodies, passages, traces).
+max_text_chars: 20000
+
+# Only used with --transport http
+http:
+  host: 127.0.0.1    # anything other than localhost REQUIRES the AGENT_MCP_TOKEN environment variable
+  port: 8765

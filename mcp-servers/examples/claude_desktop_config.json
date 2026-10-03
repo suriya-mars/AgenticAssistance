@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "agentbuild": {
+      "command": "/home/YOU/AgenticAssistance/mcp-servers/venv/bin/agentbuild-mcp",
+      "args": []
+    },
+    "agentbuild-docs-only": {
+      "command": "C:\\Users\\YOU\\AgenticAssistance\\mcp-servers\\venv\\Scripts\\agentbuild-mcp.exe",
+      "args": ["--tools", "docs"]
+    }
+  }
+}

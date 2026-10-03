@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentbuild-mcp"
+version = "0.1.0"
+description = "MCP servers exposing AgentBuild's tools (documents, mail, BUG process, QC) to any MCP client"
+requires-python = ">=3.11"
+# Also needs the AgentBuild package from the parent folder: `pip install -e ..` (see setup.sh / setup-windows.cmd).
+dependencies = [
+    "mcp>=2.3,<3",
+    "pyyaml>=6",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+agentbuild-mcp = "agentbuild_mcp.server:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
